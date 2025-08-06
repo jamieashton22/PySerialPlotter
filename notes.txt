@@ -2,9 +2,10 @@
 Aim: create python serial monitor using matplotlib 
 
 - Open port and get the data from serial and print it -- DONE
-- Get data in some sort of valid format for plotting (np array?)
-- Plot data
-- make it look nice 
+- Set up serial plotter class, a fixed size plot
+- Make sure can live plot data 
+- Add the serial stuff to the serial plotter script
+- Add an arg parser
 
 
 think need to add time in there as well so can plot distance against time ?
