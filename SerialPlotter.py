@@ -10,6 +10,7 @@ import serial
 import serial.tools.list_ports
 import time
 import re
+from collections import deque
 
 # --------- SERIALPLOTTER CLASS ---------------------------------
 
@@ -20,19 +21,26 @@ class SerialPlotter:
         self.ax = ax
         self.twidth = twidth
 
-        self.tdata = [0] # to hold time values
-        self.ydata = [0] # to hold sensor values
+        # self.tdata = [0] # to hold time values
+        # self.ydata = [0] # to hold sensor values
+
+
+        # trying with deque
+        self.tdata = deque(maxlen=1000)
+        self.ydata = deque(maxlen=1000)
 
         self.line = Line2D(self.tdata, self.ydata)
         self.ax.add_line(self.line)
-        self.ax.set_ylim(0,100)      # add y limits
-        self.ax.set_xlim(0, twidth)      # add x limits 
+        self.ax.set_ylim(0, 100)      # add y limits
+        self.ax.set_xlim(0 ,self.twidth)
+        
 
     def update(self, y, t):            # method to add a y-value to the plot and update it 
 
         self.tdata.append(t)
         self.ydata.append(y)
         self.line.set_data(self.tdata, self.ydata)
+        self.ax.set_xlim((self.tdata[-1])-self.twidth, self.tdata[-1])      # update x limits 
         return self.line,
 
 
@@ -70,7 +78,7 @@ print("\n port open \n")
 # -------- MAIN ------------------------------------------------
 
 fig, ax = plt.subplots()
-plotter = SerialPlotter(ax,10)
+plotter = SerialPlotter(ax, 10)
 
 start_time = time.time()
 
@@ -86,7 +94,7 @@ try:
             data_strip = data_raw.decode('utf-8').rstrip()
             sensor_reading = re.findall(r"\d*\.\d+|\d+", data_strip)
             
-            plotter.update(sensor_reading[0], time_elapsed)
+            plotter.update(float(sensor_reading[0]), time_elapsed)
             plt.pause(0.01)
 
     
