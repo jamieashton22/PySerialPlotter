@@ -4,18 +4,18 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
 from matplotlib.lines import Line2D
 import sys
 import serial
 import serial.tools.list_ports
 import time
+import re
 
 # --------- SERIALPLOTTER CLASS ---------------------------------
 
 class SerialPlotter: 
 
-    def __init__(self, ax, twidth):                                     # ax - axis object where line will be plotted, twidth - length of time window for x axis, dt - time incr. between data points
+    def __init__(self, ax, twidth):                                     # ax - axis object where line will be plotted, twidth - length of time window for x axis
        
         self.ax = ax
         self.twidth = twidth
@@ -25,7 +25,7 @@ class SerialPlotter:
 
         self.line = Line2D(self.tdata, self.ydata)
         self.ax.add_line(self.line)
-        self.ax.set_ylim()      # add y limits
+        self.ax.set_ylim(0,100)      # add y limits
         self.ax.set_xlim(0, twidth)      # add x limits 
 
     def update(self, y, t):            # method to add a y-value to the plot and update it 
@@ -74,19 +74,26 @@ plotter = SerialPlotter(ax,10)
 
 start_time = time.time()
 
-while True:
+try:
+    while True:
 
-    if serialInst.in_waiting:
+        if serialInst.in_waiting:
 
-        current_time = time.time()
-        time_elapsed = current_time - start_time        # get t values for x axis
+            current_time = time.time()
+            time_elapsed = current_time - start_time        # get t values for x axis
 
-        data_raw = serialInst.readline()
-        data_strip=data_raw.decode('utf-8').rstrip()
-        sensor_reading = float(data_strip)    # get sensor reading for y axis 
+            data_raw = serialInst.readline()
+            data_strip = data_raw.decode('utf-8').rstrip()
+            sensor_reading = re.findall(r"\d*\.\d+|\d+", data_strip)
+            
+            plotter.update(sensor_reading[0], time_elapsed)
+            plt.pause(0.01)
 
-        plotter.update(sensor_reading, time_elapsed)
-        plt.pause(0.01)
+    
+except KeyboardInterrupt:
+    print(" Exiting")
 
+finally:
+    serialInst.close()
         
         
