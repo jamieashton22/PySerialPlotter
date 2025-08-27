@@ -40,9 +40,12 @@ class SerialPlotter:
         self.tdata.append(t)
         self.ydata.append(y)
         self.line.set_data(self.tdata, self.ydata)
-        self.ax.set_xlim((self.tdata[-1])-self.twidth, self.tdata[-1])      # update x limits 
-        return self.line,
 
+        if (self.tdata[-1]) < self.twidth:
+            self.ax.set_xlim(0,10)
+        else:
+            self.ax.set_xlim((self.tdata[-1])-self.twidth, self.tdata[-1])
+        return self.line,
 
 # -------- SELECTING AND OPENING SERIAL PORT ------------------------------------------------
 
