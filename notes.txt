@@ -14,3 +14,12 @@ append distances to a numpy array then load and plot?
 
 maybe move getting the data into a function, then call the function and update the graph once per loop
 maybe seperate function to update the graph that calls the get data function
+
+
+27/08/25 - First version works though is rudimentary, starts from 0 and the plot scrolls. good
+
+To add:
+CLI - argparse OR
+... A proper GUI that lets you choose port/baud rate 
+ability to pause/resume
+ability to log 2 channels   
